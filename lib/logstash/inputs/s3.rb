@@ -156,6 +156,7 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
     end
   end # def process_files
 
+
   public
   def stop
     # @current_thread is initialized in the `#run` method,
@@ -227,7 +228,7 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
     line.start_with?('#Fields: ')
   end
 
-  private 
+  private
   def update_metadata(metadata, event)
     line = event['message'].strip
 
@@ -242,7 +243,7 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
 
   private
   def read_file(filename, &block)
-    if gzip?(filename) 
+    if gzip?(filename)
       read_gzip_file(filename, block)
     else
       read_plain_file(filename, block)
@@ -271,9 +272,9 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
   def gzip?(filename)
     filename.end_with?('.gz')
   end
-  
+
   private
-  def sincedb 
+  def sincedb
     @sincedb ||= if @sincedb_path.nil?
                     @logger.info("Using default generated file for the sincedb", :filename => sincedb_file)
                     SinceDB::File.new(sincedb_file)
@@ -384,15 +385,7 @@ class LogStash::Inputs::S3 < LogStash::Inputs::Base
       @secret_access_key = @credentials[1]
     end
 
-    if @credentials
-      s3 = Aws::S3::Resource.new(
-        :access_key_id => @access_key_id,
-        :secret_access_key => @secret_access_key,
-        :region => @region
-      )
-    else
-      s3 = Aws::S3::Resource.new(aws_options_hash)
-    end
+    s3 = Aws::S3::Resource.new(aws_options_hash)
   end
 
   module SinceDB

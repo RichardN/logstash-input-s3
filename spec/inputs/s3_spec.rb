@@ -266,7 +266,9 @@ describe LogStash::Inputs::S3 do
       }
       allow_any_instance_of(Aws::S3::Bucket).to receive(:objects) { objects }
       allow_any_instance_of(Aws::S3::Bucket).to receive(:object).with(log.key) { log }
-      expect(log).to receive(:get)
+      expect(log).to receive(:get).with(instance_of(Hash)) do |arg|
+        File.open(arg[:response_target], 'wb') { |s3file| s3file.write(data) }
+      end
     end
 
     context "when event doesn't have a `message` field" do
