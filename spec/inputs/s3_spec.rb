@@ -54,6 +54,12 @@ describe LogStash::Inputs::S3 do
   describe '#get_s3object' do
     subject { LogStash::Inputs::S3.new(settings) }
 
+    let(:aws_credentials) { double(Aws::Credentials) }
+
+    before(:each) do
+      allow(Aws::Credentials).to receive(:new).with("1234", "secret", nil) { aws_credentials }
+    end
+
     context 'with deprecated credentials option' do
       let(:settings) {
         {
@@ -65,8 +71,7 @@ describe LogStash::Inputs::S3 do
 
       it 'should instantiate AWS::S3 clients with a proxy set' do
         expect(Aws::S3::Resource).to receive(:new).with({
-          :access_key_id => "1234",
-          :secret_access_key => "secret",
+          :credentials => aws_credentials,
           :http_proxy => 'http://example.com',
           :region => subject.region
         })
@@ -87,8 +92,7 @@ describe LogStash::Inputs::S3 do
 
       it 'should instantiate AWS::S3 clients with a proxy set' do
         expect(Aws::S3::Resource).to receive(:new).with({
-          :access_key_id => "1234",
-          :secret_access_key => "secret",
+          :credentials => aws_credentials,
           :http_proxy => 'http://example.com',
           :region => subject.region
         })
